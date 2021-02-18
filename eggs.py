@@ -9,7 +9,7 @@ eggs info
 eggs install [--gui]
 eggs kill [options]
 eggs mom 
-eggs produce [--basename=string], [--fast|--normal|--max],[--theme=string],[--pve],[--rsupport]
+eggs produce [--prefix=string] [--basename=string] [--fast|--normal|--max] [--theme=string] [--adapt] [--pve] [--rsupport][--final][--script][--yolk]
 eggs tools [clean|locales|skel|yolk] [option]
 eggs update [options]
 eggs -h | --help| --version   
@@ -28,6 +28,8 @@ from info import info
 from install import install
 from kill import kill
 from mom import mom
+from produce import produce
+
 
 def main():
    args = docopt(__doc__)
@@ -50,6 +52,8 @@ def main():
       kill(args)
    elif args['mom']:
       mom(args)
+   elif args['produce']:
+      produce(args)
    else:
       print("command not found")
 
