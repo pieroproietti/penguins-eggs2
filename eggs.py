@@ -1,17 +1,17 @@
 '''
 Usage:
-eggs adapt [options]
+eggs adapt
 eggs calamares [install]
-eggs config [options]
+eggs config
 eggs dad
-eggs export [deb| iso| docs]
+eggs export [deb|iso|docs]
 eggs info 
 eggs install [--gui]
-eggs kill [options]
+eggs kill
 eggs mom 
 eggs produce [--prefix=string] [--basename=string] [--fast|--normal|--max] [--theme=string] [--adapt] [--pve] [--rsupport][--final][--script][--yolk]
 eggs tools [clean|locales|skel|yolk] [option]
-eggs update [options]
+eggs update
 eggs -h | --help| --version   
 '''
 
@@ -30,6 +30,7 @@ from kill import kill
 from mom import mom
 from produce import produce
 from tools import tools
+from update import update
 
 def main():
    args = docopt(__doc__)
@@ -56,6 +57,8 @@ def main():
       produce(args)
    elif args['tools']:
       tools(args)
+   elif args['update']:
+      update(args)
    else:
       print("command not found")
 

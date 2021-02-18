@@ -1,5 +1,5 @@
 def produce(args):
-   if args['--basename']!='':
+   if args['--basename']:
       basename=args['--basename']
       print('basename: ' + basename)
 
@@ -10,12 +10,12 @@ def produce(args):
    else:
       compression = 'xz'
 
-   if args['--theme']!='':
+   if args['--theme']:
       theme=args['--theme']
    else:
       theme='eggs'
 
-   if args['--prefix']!='':
+   if args['--prefix']:
       prefix = args['--prefix']
    else:
       prefix=''
@@ -38,6 +38,5 @@ def produce(args):
 
    if args['--yolk']:
       option +='--yolk'
-
 
    print('produce iso')
