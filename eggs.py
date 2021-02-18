@@ -29,7 +29,7 @@ from install import install
 from kill import kill
 from mom import mom
 from produce import produce
-
+from tools import tools
 
 def main():
    args = docopt(__doc__)
@@ -54,6 +54,8 @@ def main():
       mom(args)
    elif args['produce']:
       produce(args)
+   elif args['tools']:
+      tools(args)
    else:
       print("command not found")
 
