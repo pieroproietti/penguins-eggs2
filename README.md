@@ -1,1 +1,5 @@
-# python-eggs# penguins-eggs2
+# penguins-eggs2
+
+Rifacimento di eggs in python
+
+
