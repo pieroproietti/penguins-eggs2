@@ -1,4 +1,7 @@
 import subprocess
+import shlex
+from colorama import Fore, Back, Style
+
 
 class Utils:
  
@@ -14,18 +17,39 @@ class Utils:
    
 
    def vmlinuz(self):
-      bashCmd1 = "cat /proc/cmdline"
-      bashCmd2 = "/usr/bin/cut -f1 -d ' '"
-      bashCmd3 = "/usr/bin/cut -f2 -d ="
+      """Ritorna il path di vmlinuz"""
+      bashCmd1 =  shlex.split("cat /proc/cmdline")
+      bashCmd2 =  shlex.split("/usr/bin/cut -f1 -d ' '")
+      bashCmd3 =  shlex.split("/usr/bin/cut -f2 -d =")
 
-      #bashCommand ="cat /proc/cmdline|/usr/bin/cut -f1 -d ' ' |/usr/bin/cut -f2 -d '='"
-      output1 = subprocess.Popen(bashCmd1.split(), stdout=subprocess.PIPE)
-      print('output1')
-      print(output1.stdout)
-      print('output2')
-      output2 = subprocess.Popen(bashCmd2.split(), stdout=subprocess.PIPE, stdin=output1.stdout)
-      print('output3')
-      print(output2.stdout)
-      output3 = subprocess.Popen(bashCmd3.split(), stdout=subprocess.PIPE, stdin=output2.stdout) 
-      print(output3.stdout)
-      return output3
+      # pipe di comandi
+      process1 = subprocess.Popen(bashCmd1, stdout=subprocess.PIPE)
+      process2 = subprocess.Popen(bashCmd2, stdin=process1.stdout, stdout=subprocess.PIPE)
+      process3 = subprocess.Popen(bashCmd3, stdin=process2.stdout, stdout=subprocess.PIPE)
+      result = process3.stdout.read()
+      return result
+
+   def initrdImg(self): 
+      """Ritorna il path per initrdImg"""
+      vmlinuz = self.vmlinuz()
+      path = vmlinuz[0: vmlinuz.rfind('/')] + '/'
+      version = vmlinuz[vmlinuz.find('-'):]
+      result = path + 'initrd.img' + version
+      return result
+
+   def warning(self, msg='ciao'):
+      """ Emette un messaggio di warning """
+      print('eggs >>> ' + Fore.CYAN + msg + Style.RESET_ALL + '.')
+
+   def error(self, msg='ciao'):
+      """ Emette un messaggio di errore """
+      print('eggs >>> ' + Fore.RED + msg + Style.RESET_ALL + '.')
+
+
+   def getPrimaryUser(self):
+      #bashCommand = "echo $SUDO_USER"
+      bashCommand = "whoami"
+      process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
+      output = process.stdout.read()
+      return output
+

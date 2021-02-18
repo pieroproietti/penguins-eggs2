@@ -66,7 +66,7 @@ def main():
       update(args)
    else:
       u = Utils()
-      print(u.vmlinuz())
+      print (u.getPrimaryUser())
       #print("eggs command not found")
 
 if __name__=='__main__':
