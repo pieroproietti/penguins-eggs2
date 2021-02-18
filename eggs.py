@@ -1,5 +1,6 @@
 '''
 Usage:
+eggs test
 eggs adapt
 eggs calamares [install]
 eggs config
@@ -19,6 +20,8 @@ import sys
 from docopt import docopt
 
 sys.path.append('./commands')
+sys.path.append('./classes')
+
 from adapt import adapt
 from calamares import calamares
 from config import config
@@ -31,6 +34,8 @@ from mom import mom
 from produce import produce
 from tools import tools
 from update import update
+
+from utils import Utils
 
 def main():
    args = docopt(__doc__)
@@ -60,7 +65,9 @@ def main():
    elif args['update']:
       update(args)
    else:
-      print("command not found")
+      u = Utils()
+      print(u.isSystemd())
+      #print("eggs command not found")
 
 if __name__=='__main__':
    main()
