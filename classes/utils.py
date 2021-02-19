@@ -4,7 +4,7 @@ import os
 import platform
 import filetype
 import socket
-
+import netifaces
 
 import shlex
 from datetime import date, datetime
@@ -223,17 +223,17 @@ class Utils:
     def kernerlVersion(self):
       return platform.release()
     
-    def netDeviceName(self):
+    def netDeviceName(self)->str :
       x = netifaces.interfaces()
       for i in x:
         if i != 'lo':
-          result = i
+          result: str = i
 
       return result
 
-    def netAddress(self):
-      hostname = socket.gethostname()
-      local_ip = socket.gethostbyname(hostname)
+    def netAddress(self) ->str:
+      hostname: str = socket.gethostname()
+      local_ip: str = socket.gethostbyname(hostname)
       return local_ip
 
     def netMask(self, iface='vmbr0'):
@@ -241,7 +241,7 @@ class Utils:
       import fcntl
       import struct
 
-      result = socket.inet_ntoa(fcntl.ioctl(socket.socket(socket.AF_INET, socket.SOCK_DGRAM), 35099, struct.pack('256s', iface))[20:24])
+      result: str = "" #socket.inet_ntoa(fcntl.ioctl(socket.socket(socket.AF_INET, socket.SOCK_DGRAM), 35099, struct.pack('256s', iface))[20:24])
       return result
 
     def netDns(self):

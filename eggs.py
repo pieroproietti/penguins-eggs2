@@ -68,7 +68,7 @@ def main():
       update(args)
    else:
       u = Utils()
-      print (u.netMask())
+      print (u.netDeviceName())
       #print("eggs command not found")
 
 if __name__=='__main__':
