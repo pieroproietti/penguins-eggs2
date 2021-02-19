@@ -2,6 +2,9 @@ import subprocess
 import glob
 import os
 import platform
+import filetype
+import socket
+
 
 import shlex
 from datetime import date, datetime
@@ -107,16 +110,140 @@ class Utils:
         return isoName
 
     def getUsedSpace(self):
-       """ ritorna lo spazio occupato nel disco """
-       import psutil
- 
-       result = psutil.disk_usage('/').used
-       return result
+        """ ritorna lo spazio occupato nel disco """
+        import psutil
 
-    getLiveRootSpace(type = 'debian-live'):
-      squashFs = '/run/live/medium/live/filesystem.squashfs'
-      if (type === 'mx') {
-         squashFs = '/live/boot-dev/antiX/linuxfs'
-      }
-      result os.path.getsize(squashFs)
+        result = psutil.disk_usage('/').used
+        return result
+
+    def getLiveRootSpace(type='debian-live'):
+        squashFs = '/run/live/medium/live/filesystem.squashfs'
+        if (type == 'mx'):
+            squashFs = '/live/boot-dev/antiX/linuxfs'
+
+        if os.path.exists(squashFs):
+            result = os.path.getsize(squashFs)
+            # kind = filetype.guess(squashFs)
+
+        else:
+            result = 0
+
+        return result
+
+    def is696(self):
+        """ ritorna vero se 386"""
+        arch = platform.machine()
+        if arch == 'i386':
+            return True
+
+    def isUefi(self):
+        """ Ritorna vero se uefi"""
+        result = False
+        arch = platform.machine()
+        if arch == 'x86_64':
+            if self.isInstalled('grub-efi-amd64'):
+                result = True
+
+        return result
+
+    def isInstalled(self, debPackage):
+        """ Ritorna vero se il pacchetto  installato """
+        bashCmd1 = "/usr/bin/dpkg -s " + debPackage
+        bashCmd2 = "grep Status"
+        process1 = subprocess.Popen(
+            shlex.split(bashCmd1), stdout=subprocess.PIPE)
+        process2 = subprocess.Popen(
+            shlex.split(bashCmd2), stdin=process1.stdout, stdout=subprocess.PIPE)
+
+        output = process2.stdout.read()
+
+        result = False
+        if output == 'Status: install ok installed\n':
+            result = True
+        return result
+
+    def isDebPackage(self):
+        return True
+
+    def isSources(self):
+        return False
+
+    def rootPenguins(self):
+        return __dirname
+
+    def getFriendName(self):
+        return "eggs"
+
+    def getPackageVersion(self):
+        return "0.0.1"
+
+    def getAuthorName(self):
+        return "Piero Proietti piero.proietti@gmail.com"
+
+    def getDebianVersion(self):
+        bashCmd1 = "cat /etc/debian_version"
+        bashCmd2 = "/usr/bin/cut -f1 -d'.'"
+        process1 = subprocess.Popen(
+            shlex.split(bashCmd1), stdout=subprocess.PIPE)
+
+        process2 = subprocess.Popen(
+            shlex.split(bashCmd2), stdin=process1.stdout, stdout=subprocess.PIPE)
+        output = process2.stdout.read()
+        return output
+
+    def isLive(self):
+      """ Ritorna vero se e una live """
+      result= False
+      paths = ['/lib/live/mount', # debian-live
+              '/lib/live/mount/rootfs/filesystem.squashfs', # ubuntu bionic
+              '/live/aufs' # mx-linux
+              ]
+      for path in paths:
+        if self.isMountpoint(path):
+          result=True
+
       return result
+
+    def isMountpoint(self, path = ''):
+      bashCmd = "mountpoint -q " + path
+      output = self.bashExec(bashCmd)
+      result = False
+      if output == '0\n':
+        result = True
+      return result
+
+    def isRoot(self, command='nada'):
+      result = True
+      if os.geteuid() != 0:
+        result = False
+        self.warning(command +', need to run with root privileges. Please, prefix it with sudo')
+
+      return result
+
+    def kernerlVersion(self):
+      return platform.release()
+    
+    def netDeviceName(self):
+      x = netifaces.interfaces()
+      for i in x:
+        if i != 'lo':
+          result = i
+
+      return result
+
+    def netAddress(self):
+      hostname = socket.gethostname()
+      local_ip = socket.gethostbyname(hostname)
+      return local_ip
+
+    def netMask(self, iface='vmbr0'):
+      """ return the netmask """
+      import fcntl
+      import struct
+
+      result = socket.inet_ntoa(fcntl.ioctl(socket.socket(socket.AF_INET, socket.SOCK_DGRAM), 35099, struct.pack('256s', iface))[20:24])
+      return result
+
+    def netDns(self):
+      return "192.168.61.1"
+
