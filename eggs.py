@@ -18,6 +18,8 @@ eggs -h | --help| --version
 
 import sys
 from docopt import docopt
+from datetime import datetime
+
 
 sys.path.append('./commands')
 sys.path.append('./classes')
@@ -66,7 +68,7 @@ def main():
       update(args)
    else:
       u = Utils()
-      print (u.uuid())
+      print (u.formatDate(datetime.now()))
       #print("eggs command not found")
 
 if __name__=='__main__':
