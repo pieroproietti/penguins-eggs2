@@ -68,7 +68,7 @@ def main():
       update(args)
    else:
       u = Utils()
-      print (u.formatDate(datetime.now()))
+      print (u.getUsedSpace())
       #print("eggs command not found")
 
 if __name__=='__main__':
