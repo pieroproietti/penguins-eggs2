@@ -49,7 +49,13 @@ class Utils:
    def getPrimaryUser(self):
       #bashCommand = "echo $SUDO_USER"
       bashCommand = "whoami"
-      process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
+      process = subprocess.Popen(shlex.split(bashCommand), stdout=subprocess.PIPE)
       output = process.stdout.read()
       return output
 
+   def uuid(self, device="/dev/sda1"):
+      """ Ritorna uuid del device """
+      bashCommand = "blkid -s UUID -o value " + device
+      process = subprocess.Popen(shlex.split(bashCommand), stdout=subprocess.PIPE)
+      output = process.stdout.read()
+      return output
