@@ -6,20 +6,19 @@ eggs calamares [install]
 eggs config
 eggs dad
 eggs export [deb|iso|docs]
-eggs info 
+eggs info
 eggs install [--gui]
 eggs kill
-eggs mom 
+eggs mom
 eggs produce [--prefix=string] [--basename=string] [--fast|--normal|--max] [--theme=string] [--adapt] [--pve] [--rsupport][--final][--script][--yolk]
 eggs tools [clean|locales|skel|yolk] [option]
 eggs update
-eggs -h | --help| --version   
+eggs -h | --help| --version
 '''
 
 import sys
 from docopt import docopt
 from datetime import datetime
-
 
 sys.path.append('./commands')
 sys.path.append('./classes')
@@ -39,37 +38,39 @@ from update import update
 
 from utils import Utils
 
+
 def main():
-   args = docopt(__doc__)
+    args = docopt(__doc__)
 
-   if args['adapt']:
-      adapt(args)
-   elif args['calamares']:
-      calamares(args)
-   elif args['config']:
-      config(args)
-   elif args['dad']:
-      dad(args)
-   elif args['export']:
-      export(args)
-   elif args['info']:
-      info(args)
-   elif args['install']:
-      install(args)
-   elif args['kill']:
-      kill(args)
-   elif args['mom']:
-      mom(args)
-   elif args['produce']:
-      produce(args)
-   elif args['tools']:
-      tools(args)
-   elif args['update']:
-      update(args)
-   else:
-      u = Utils()
-      print (u.netDeviceName())
-      #print("eggs command not found")
+    if args['adapt']:
+        adapt(args)
+    elif args['calamares']:
+        calamares(args)
+    elif args['config']:
+        config(args)
+    elif args['dad']:
+        dad(args)
+    elif args['export']:
+        export(args)
+    elif args['info']:
+        info(args)
+    elif args['install']:
+        install(args)
+    elif args['kill']:
+        kill(args)
+    elif args['mom']:
+        mom(args)
+    elif args['produce']:
+        produce(args)
+    elif args['tools']:
+        tools(args)
+    elif args['update']:
+        update(args)
+    else:
+        u = Utils()
+        print(u.netDeviceName())
+        # print("eggs command not found")
 
-if __name__=='__main__':
-   main()
+
+if __name__ == '__main__':
+    main()

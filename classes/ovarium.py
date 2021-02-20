@@ -1,3 +1,1 @@
-class Ovarium {
-
-}
+class Ovarium:

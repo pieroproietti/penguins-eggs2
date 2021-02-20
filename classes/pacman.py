@@ -1,3 +1,2 @@
-#%%
-print("pacman")
+class pacman:
 
