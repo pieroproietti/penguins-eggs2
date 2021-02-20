@@ -35,7 +35,6 @@ from mom import mom
 from produce import produce
 from tools import tools
 from update import update
-
 from utils import Utils
 
 
@@ -67,8 +66,7 @@ def main():
     elif args['update']:
         update(args)
     else:
-        u = Utils()
-        print(u.netDeviceName())
+        print(Utils.is_systemd())
         # print("eggs command not found")
 
 
