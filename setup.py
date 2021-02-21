@@ -1,19 +1,26 @@
-### setup.py file
-from setuptools import setup
+#!/usr/bin/env python3
+# coding: utf-8
+from setuptools import find_packages, setup
 
-with open("requirements.txt", "r") as fh:
-    requirements = fh.readlines()
-    setup(
-        name='eggs',
-        author='PieroProietti',
-        description='Port di eggs in python',
-        version='0.0.1',
-        packages={'penguins-eggs2'},
-        install_requires=[req for req in requirements if req[:2] != "# "],
-        include_package_data=True,
-        entry_points={
-            'console_scripts': [
-                'eggs = eggs.docopt:main'
-            ]
-        }
-    )
+with open('README.md') as readme:
+    long_description = readme.read()
+
+setup(
+    name='eggs',
+    description='port di eggs in python3',
+    version='0.6',
+    long_description=long_description,
+    author='Piero Proietti',
+    author_email='piero.proietti@gmail.com',
+    url='https://github.com/pieroproietti/penguins-eggs2',
+    packages=find_packages(),
+    classifiers=[
+        'Development Status :: 4 - Beta',
+        'Intended Audience :: Developers',
+        ('License :: OSI Approved :: GNU Library or Lesser '
+         'General Public License (LGPL)'),
+        'Operating System :: POSIX',
+        'Programming Language :: Python :: 3.5',
+        'Topic :: Software Development :: Libraries :: Python Modules',
+    ],
+)

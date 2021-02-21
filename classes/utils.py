@@ -4,35 +4,45 @@ import glob
 import os
 import platform
 import filetype
-import socket
-import netifaces
 import shlex
 from datetime import date, datetime
 from colorama import Fore, Back, Style
+
+from pacman import Pacman
+
 
 
 class Utils:
     """ Utility generali"""
 
     @staticmethod
+    def bash_exec(cmd) -> str:
+        """ return output bash command """
+        subprocess = bash(cmd)
+        if subprocess.code == 0:
+            stdout = subprocess.stdout.decode('utf-8').strip()
+        return stdout
+
+    @staticmethod
     def is_systemd() -> bool:
         """ return true if systemd """
-        output = Utils.bash_exec("/usr/bin/ps -p 1 -o comm=")
+        cmd = "/usr/bin/ps -p 1 -o comm="
         result = False
-        print( output)
-        if output == 'systemd\n':
+        stdout = Utils.bash_exec(cmd)
+        if stdout == "systemd":
             result = True
         return result
+
+    @staticmethod
+    def kernerl_version() -> str:
+        """ return kernel version """
+        return platform.release()
 
     @staticmethod
     def vmlinuz() -> str:
         """ return path vmlinuz """
         cmd = "cat /proc/cmdline|/usr/bin/cut -f1 -d ' ' |/usr/bin/cut -f2 -d '='"
-        p = bash(cmd)
-        result = ''
-        if p.code == 0:
-            result =p.stdout
-            
+        result = Utils.bash_exec(cmd)
         return result
 
     @staticmethod
@@ -45,34 +55,22 @@ class Utils:
         return result
 
     @staticmethod
-    def warning(msg='') -> None:
-        """ Emit a warning message """
-        print('eggs >>> ' + Fore.CYAN + msg + Style.RESET_ALL + '.')
-
-    @staticmethod
-    def error(msg='') -> None:
-        """ emit an error message  """
-        print('eggs >>> ' + Fore.RED + msg + Style.RESET_ALL + '.')
-
-    @staticmethod
     def get_primary_user() -> str:
         """ retrieve primary username """
-        # bashCommand = "echo $SUDO_USER"
-        output = Utils.bash_exec("/usr/bin/whoami")
-        return output
+        cmd = 'whoami'
+        result = Utils.bash_exec(cmd)
+        return result
+
+    @staticmethod
+    def get_author_name() -> str:
+        """ just a thing """
+        return "Piero Proietti piero.proietti@gmail.com"
+
 
     @staticmethod
     def uuid(device="/dev/sda1") -> str:
         """ return device uuid  """
         output = Utils.bash_exec("/usr/sbin/blkid -s UUID -o value " + device)
-        return output
-
-    @staticmethod
-    def bash_exec(cmd) -> str:
-        """ return output bash command """
-        process = subprocess.Popen(shlex.split(
-            cmd), stdout=subprocess.PIPE)
-        output = process.stdout.read()
         return output
 
     @staticmethod
@@ -113,7 +111,7 @@ class Utils:
         return iso_name
 
     @staticmethod
-    def get_used_space():
+    def get_used_space() -> int:
         """ return used space in the disk  """
         import psutil
 
@@ -121,7 +119,7 @@ class Utils:
         return result
 
     @staticmethod
-    def get_live_space(type='debian-live'):
+    def get_live_space(type='debian-live') -> float:
         """ return extimated space used for the live systeme"""
         squashFs = '/run/live/medium/live/filesystem.squashfs'
         if (type == 'mx'):
@@ -149,37 +147,16 @@ class Utils:
         result = False
         arch = platform.machine()
         if arch == 'x86_64':
-            if Utils.isInstalled('grub-efi-amd64'):
+            if Pacman.is_installed('grub-efi-amd64'):
                 result = True
 
         return result
 
-    @staticmethod
-    def is_installed(deb_package) -> bool:
-        """ return True if deb_package is installaed """
-        bash_cmd1 = "/usr/bin/dpkg -s " + deb_package
-        bash_cmd2 = "grep Status"
-        process1 = subprocess.Popen(
-            shlex.split(bash_cmd1), stdout=subprocess.PIPE)
-        process2 = subprocess.Popen(
-            shlex.split(bash_cmd2), stdin=process1.stdout, stdout=subprocess.PIPE)
-
-        output = process2.stdout.read()
-
-        result = False
-        if output == 'Status: install ok installed\n':
-            result = True
-        return result
 
     @staticmethod
     def is_deb_package() -> bool:
         """ eggs2 is alwayays installed as deb"""
         return True
-
-    @staticmethod
-    def get_author_name() -> str:
-        """ just a thing """
-        return "Piero Proietti piero.proietti@gmail.com"
 
     @staticmethod
     def is_sources() -> bool:
@@ -204,15 +181,9 @@ class Utils:
     @staticmethod
     def get_debian_version() -> str:
         """ return debian version: 9, 10, 11 """
-        bash_cmd1 = "cat /etc/debian_version"
-        bash_cmd2 = "/usr/bin/cut -f1 -d'.'"
-        process1 = subprocess.Popen(
-            shlex.split(bash_cmd1), stdout=subprocess.PIPE)
-
-        process2 = subprocess.Popen(
-            shlex.split(bash_cmd2), stdin=process1.stdout, stdout=subprocess.PIPE)
-        output = process2.stdout.read()
-        return output
+        cmd = "cat /etc/debian_version|/usr/bin/cut -f1 -d'.'"
+        stdout = Utils.bash_exec(cmd)
+        return stdout
 
     @staticmethod
     def is_live() -> bool:
@@ -223,7 +194,7 @@ class Utils:
                  '/live/aufs'  # mx-linux
                  ]
         for path in paths:
-            if Utils.isMountpoint(path):
+            if Utils.is_mountpoint(path):
                 result = True
 
         return result
@@ -231,9 +202,9 @@ class Utils:
     @staticmethod
     def is_mountpoint(path='') -> bool:
         """ return True if path is a mountpoint """
-        output = Utils.bash_exec("mountpoint -q " + path)
         result = False
-        if output == '0\n':
+        stdout = Utils.bash_exec("mountpoint -q " + path)
+        if stdout == '0':
             result = True
         return result
 
@@ -243,40 +214,17 @@ class Utils:
         result = True
         if os.geteuid() != 0:
             result = False
-            Utils.warning(command + ', need to run with root privileges. Please, prefix it with sudo')
+            Utils.warning(
+                command + ', need to run with root privileges. Please, prefix it with sudo')
 
         return result
 
     @staticmethod
-    def kernerl_version() -> str:
-        """ return kernel version """
-        return platform.release()
+    def warning(msg='') -> None:
+        """ Emit a warning message """
+        print('eggs >>> ' + Fore.CYAN + msg + Style.RESET_ALL + '.')
 
     @staticmethod
-    def net_device_name() -> str:
-        """ return net_device_name """
-        x = netifaces.interfaces()
-        for i in x:
-            if i != 'lo':
-                result: str = i
-
-        return result
-
-    @staticmethod
-    def net_address() -> str:
-        hostname: str = socket.gethostname()
-        local_ip: str = socket.gethostbyname(hostname)
-        return local_ip
-
-    @staticmethod
-    def net_mask(iface='vmbr0') -> str:
-        """ return the netmask """
-        import fcntl
-        import struct
-
-        result: str = socket.inet_ntoa(fcntl.ioctl(socket.socket(socket.AF_INET, socket.SOCK_DGRAM), 35099, struct.pack('256s', iface))[20:24])
-        return result
-
-    @staticmethod
-    def net_dns() -> str:
-        return "192.168.61.1"
+    def error(msg='') -> None:
+        """ emit an error message  """
+        print('eggs >>> ' + Fore.RED + msg + Style.RESET_ALL + '.')

@@ -36,6 +36,7 @@ from produce import produce
 from tools import tools
 from update import update
 from utils import Utils
+from net import Net
 
 
 def main():
@@ -66,8 +67,7 @@ def main():
     elif args['update']:
         update(args)
     else:
-        print(Utils.vmlinuz())
-        print(Utils.initrd_img())
+        print ("Net.net_address:", Net.net_address())
         # print("eggs command not found")
 
 
