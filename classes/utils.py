@@ -1,12 +1,13 @@
+from bash import bash
 import subprocess
 import glob
 import os
 import platform
-# import filetype
+import filetype
 import socket
 import netifaces
 import shlex
-# from datetime import date, datetime
+from datetime import date, datetime
 from colorama import Fore, Back, Style
 
 
@@ -26,17 +27,12 @@ class Utils:
     @staticmethod
     def vmlinuz() -> str:
         """ return path vmlinuz """
-        bash_cmd1 = shlex.split("cat /proc/cmdline")
-        bash_cmd2 = shlex.split("/usr/bin/cut -f1 -d ' '")
-        bash_cmd3 = shlex.split("/usr/bin/cut -f2 -d =")
-
-        # pipe di comandi
-        process1 = subprocess.Popen(bash_cmd1, stdout=subprocess.PIPE)
-        process2 = subprocess.Popen(
-            bash_cmd2, stdin=process1.stdout, stdout=subprocess.PIPE)
-        process3 = subprocess.Popen(
-            bash_cmd3, stdin=process2.stdout, stdout=subprocess.PIPE)
-        result = process3.stdout.read()
+        cmd = "cat /proc/cmdline|/usr/bin/cut -f1 -d ' ' |/usr/bin/cut -f2 -d '='"
+        p = bash(cmd)
+        result = ''
+        if p.code == 0:
+            result =p.stdout
+            
         return result
 
     @staticmethod
@@ -108,7 +104,7 @@ class Utils:
         arch = platform.machine()
         if arch == 'x86_64':
             arch = 'x64'
-        now = datatime.now()
+        now = datetime.now()
         iso_name = basename + '-' + arch + '_' + now.strftime("%Y-%m-%d_%H%M")
         if len(iso_name) >= 20:
             iso_name = iso_name[0:28]

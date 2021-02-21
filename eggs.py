@@ -66,7 +66,8 @@ def main():
     elif args['update']:
         update(args)
     else:
-        print(Utils.is_systemd())
+        print(Utils.vmlinuz())
+        print(Utils.initrd_img())
         # print("eggs command not found")
 
 
