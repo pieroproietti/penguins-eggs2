@@ -4,7 +4,6 @@ import glob
 import os
 import platform
 import filetype
-import shlex
 from datetime import date, datetime
 from colorama import Fore, Back, Style
 
@@ -23,6 +22,60 @@ class Utils:
             stdout = subprocess.stdout.decode('utf-8').strip()
         return stdout
 
+    #########################################################################################
+    # pacman
+    #########################################################################################
+    @staticmethod
+    def is_installed(deb_package) -> bool:
+        """ return True if deb_package is installaed """
+        cmd = "/usr/bin/dpkg -s " + deb_package + "|grep Status"
+        stdout = Pacman.bash_exec(cmd)
+        result = False
+        if stdout == 'Status: install ok installed':
+            result = True
+        return result
+
+    #########################################################################################
+    # net 
+    #########################################################################################
+    @staticmethod
+    def net_device_name() -> str:
+        """ return net_device_name """
+        x = netifaces.interfaces()
+        for i in x:
+            if i != 'lo':
+                result: str = i
+
+        return result
+
+    @staticmethod
+    def net_address() -> str:
+        
+        hostname: str = socket.getfqdn()
+        local_ip: str = socket.gethostbyname(hostname)
+        return local_ip
+
+    @staticmethod
+    def net_mask(iface='vmbr0') :
+        """ return the netmask """
+        import fcntl
+        import struct
+        result = socket.inet_ntoa(fcntl.ioctl(socket.socket(socket.AF_INET, socket.SOCK_DGRAM), 35099, struct.pack('256s', iface))[20:24])
+
+        return result
+
+    @staticmethod
+    def net_dns() -> str:
+        return "192.168.61.1"
+
+    @staticmethod
+    def net_gateway() -> str:
+        return "192.168.61.1"
+
+
+    #########################################################################################
+    # utils
+    #########################################################################################
     @staticmethod
     def is_systemd() -> bool:
         """ return true if systemd """
@@ -65,7 +118,6 @@ class Utils:
     def get_author_name() -> str:
         """ just a thing """
         return "Piero Proietti piero.proietti@gmail.com"
-
 
     @staticmethod
     def uuid(device="/dev/sda1") -> str:
@@ -135,7 +187,7 @@ class Utils:
         return result
 
     @staticmethod
-    def is686() -> bool:
+    def is_686() -> bool:
         """ return True if 386 """
         arch = platform.machine()
         if arch == 'i386':
@@ -219,6 +271,9 @@ class Utils:
 
         return result
 
+    #########################################################################################
+    # messages
+    #########################################################################################
     @staticmethod
     def warning(msg='') -> None:
         """ Emit a warning message """
